@@ -3,7 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-int moisture;
+int soilMoisture;
 int vcc;
 HTTPClient http;
 WiFiClient wifi;
@@ -11,9 +11,9 @@ WiFiClient wifi;
 void readSensors() {
   digitalWrite(SOIL_PWR, HIGH);
   delay(300);
-  moisture = analogRead(SOIL_PIN);
+  soilMoisture = analogRead(SOIL_PIN);
   Serial.print("Moisture : ");
-  Serial.println(moisture);
+  Serial.println(soilMoisture);
   digitalWrite(SOIL_PWR, LOW);
 }
 
@@ -28,7 +28,7 @@ void wait() {
 
 boolean WiFiconnect()
 {
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_PIN, HIGH);
   if (WiFi.status() != WL_CONNECTED && WiFi.SSID() != AP_SSID)
   {
     Serial.println(F("Initialising Wifi..."));
@@ -47,7 +47,7 @@ boolean WiFiconnect()
   }
   Serial.print(" Connected! IP address: ");
   Serial.println(WiFi.localIP());
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_PIN, LOW);
   return true;
 }
 
@@ -58,7 +58,7 @@ void sendDataDomoticz() {
     Serial.println("Domoticz send begin...\n");
 
     String url = "http://" + String(DOMOTICZ_IP) + ":" + DOMOTICZ_PORT + 
-    "/json.htm?type=command&param=udevice&idx=199&nvalue=" + String(moisture) + "&svalue=" + String(moisture);
+    "/json.htm?type=command&param=udevice&idx=199&nvalue=" + String(soilMoisture) + "&svalue=" + String(soilMoisture);
     http.begin(wifi, url);
     http.addHeader("Accept", "*/*");
     http.addHeader("Host", DOMOTICZ_IP);
